@@ -1,28 +1,39 @@
+import { Inject } from '@nestjs/common';
 import { TodoStatus } from './dto/create-todo.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { TodoEntitiy } from 'src/entities/Todo.entiti';
+import { Repository } from 'typeorm';
 
-let todos: any = [];
 
 export class TodoService {
+
+  constructor(
+    @InjectRepository(TodoEntitiy)
+    private todoRepo: Repository<TodoEntitiy>
+  ) { }
+
+
   list() {
-    return todos;
+    return this.todoRepo.find({});
   }
 
-  create(task: string) {
+  async create(task: string) {
     let todo = {
       task,
       status: TodoStatus.PENDING,
     };
 
-    todos.push(todo);
+    let result = await this.todoRepo.save(todo)
 
-    return todo;
+
+    return result;
   }
 
-  delete(task: string) {
-    todos = todos.filter((todo) => todo.task !== task);
+  // delete(task: string) {
+  //   todos = todos.filter((todo) => todo.task !== task);
 
-    return {
-      message: 'Todo deleted successfully',
-    };
-  }
+  //   return {
+  //     message: 'Todo deleted successfully',
+  //   };
+  // }
 }
